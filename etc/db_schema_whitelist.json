@@ -1,0 +1,53 @@
+{
+    "panth_admin_menu_view": {
+        "column": {
+            "view_id": true,
+            "label": true,
+            "is_active": true,
+            "is_default": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        },
+        "index": {
+            "PANTH_ADMIN_MENU_VIEW_IS_ACTIVE": true
+        }
+    },
+    "panth_admin_menu_override": {
+        "column": {
+            "override_id": true,
+            "view_id": true,
+            "menu_item_id": true,
+            "is_disabled": true,
+            "custom_label": true,
+            "custom_icon": true,
+            "custom_color": true,
+            "custom_parent_menu_item_id": true,
+            "sort_order": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_ADMIN_MENU_OVERRIDE_VIEW_ITEM": true,
+            "PANTH_ADMIN_MENU_OVERRIDE_VIEW_ID_PANTH_ADMIN_MENU_VIEW_VIEW_ID": true
+        },
+        "index": {
+            "PANTH_ADMIN_MENU_OVERRIDE_IS_DISABLED": true
+        }
+    },
+    "panth_admin_menu_user_pref": {
+        "column": {
+            "admin_user_id": true,
+            "active_view_id": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_ADMIN_MENU_USER_PREF_ADMIN_USER_ID_ADMIN_USER_USER_ID": true,
+            "PANTH_ADMIN_MENU_USER_PREF_VIEW_ID_PANTH_ADMIN_MENU_VIEW_VIEW_ID": true
+        }
+    }
+}

@@ -1,0 +1,505 @@
+/* ============================================================
+ * Panth Admin Menu Drilldown
+ * Click-only · Magento-native palette · Search-filterable
+ * Scoped to .panth-target - non-target L0s keep Magento default.
+ * ============================================================ */
+
+/* Magento opens the panel by adding ._show on click. We do not override that;
+ * we just style whatever is shown. .panth-open kept as alias for our own control. */
+nav.admin__menu.panth-drilldown-enabled > ul > li.panth-target.panth-open > .submenu {
+    display: block !important;
+}
+
+
+/* ---------- panel chrome (target panels only) ----------
+ * Values pulled straight from Magento's compiled adminhtml CSS so
+ * the drilldown is visually indistinguishable from the stock menu.
+ *   .admin__menu .level-0 > .submenu  -> background #4a4542, box-shadow 0 0 3px #000
+ *   .admin__menu .submenu a           -> color #fcfcfc, hover #403934, active #322c29
+ *   .admin__menu .submenu-title       -> color #fff, font-size 2.2rem, font-weight 600
+ *   [class*='level-']:not(.level-0) a -> padding 1.25rem 1.5rem (12.5px 15px)
+ */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu {
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    /* Match Magento's stock submenu - fill the viewport top-to-bottom
+     * so the dark panel chrome doesn't terminate after the last item
+     * leaving a white void where the page bleeds through. The ul inside
+     * still scrolls (max-height set further down) so a long menu stays
+     * usable on short viewports. */
+    height: 100vh !important;
+    min-height: 100vh !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #4a4542 !important;
+    border: 0 !important;
+    box-shadow: 0 0 3px #000 !important;
+}
+
+/* ---------- header bar (matches Magento .submenu-title) ---------- */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > .submenu-title {
+    position: relative;
+    display: block !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 2rem 5.8rem 2rem 3rem !important;
+    background: transparent !important;
+    border: 0 !important;
+    color: #ffffff !important;
+    font-size: 2.2rem !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-is-drilled > .submenu-title {
+    padding-left: 5.4rem !important;
+    font-size: 1.8rem !important;
+    font-weight: 600 !important;
+}
+
+/* ---------- close (×) button (matches Magento .action-close) ----------
+ * Pre-1.0.1 used 1.7rem ≈ 17px - too small relative to the 22px panel
+ * title beside it, especially on hi-DPI screens. Bumped to 2.6rem
+ * (~26px glyph) with a roomier 2rem×2.4rem hit-target so the icon reads
+ * as a comfortable click target.
+ */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > .action-close {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 2rem 2.4rem !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    cursor: pointer !important;
+    transition: background 0.1s ease !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > .action-close::before {
+    content: '\00D7' !important;
+    display: block !important;
+    width: 2.6rem !important;
+    height: 2.6rem !important;
+    line-height: 2.6rem !important;
+    text-align: center !important;
+    font-family: 'Helvetica Neue', Arial, sans-serif !important;
+    font-size: 2.6rem !important;
+    font-weight: 400 !important;
+    color: #a79d95 !important;
+    background: transparent !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > .action-close:hover::before {
+    color: #ffffff !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > .action-close::after {
+    display: none !important;
+    content: '' !important;
+}
+
+/* ---------- back button (mirrors action-close geometry on the left) ----------
+ * Padding + glyph size mirror .action-close so the two header icons read
+ * as a balanced pair rather than the previous 18px ‹ next to a 17px ×.
+ */
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-back-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 2rem 2.4rem;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #a79d95;
+    font-family: inherit;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.1s ease;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-back-btn.panth-visible {
+    display: inline-flex;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-back-btn:hover {
+    color: #ffffff;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-back-arrow {
+    width: 2.6rem;
+    height: 2.6rem;
+    line-height: 2.6rem;
+    font-size: 2.6rem;
+    font-weight: 400;
+    text-align: center;
+}
+
+/* ---------- search box (sits between title and items) ---------- */
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-search-wrap {
+    position: relative;
+    box-sizing: border-box;
+    display: block;
+    padding: 0 1.5rem 1.5rem;
+    margin: 0;
+    background: transparent;
+    border: 0;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-search-icon {
+    position: absolute;
+    left: 2.5rem;
+    top: 0;
+    bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    color: #a79d95;
+    pointer-events: none;
+    z-index: 1;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-search-icon svg {
+    display: block;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-menu-search {
+    box-sizing: border-box !important;
+    display: block !important;
+    width: 100% !important;
+    height: 3.4rem !important;
+    margin: 0 !important;
+    padding: 0 1.2rem 0 3.4rem !important;
+    background: #403934 !important;
+    border: 1px solid #322c29 !important;
+    border-radius: 2px !important;
+    color: #fcfcfc !important;
+    font-family: inherit !important;
+    font-size: 1.3rem !important;
+    line-height: 3.2rem !important;
+    vertical-align: middle !important;
+    transition: border-color 0.1s linear, background-color 0.1s linear !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-menu-search:focus {
+    outline: none !important;
+    border-color: #6c645b !important;
+    background: #322c29 !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-menu-search::placeholder {
+    color: #a79d95 !important;
+    opacity: 1 !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-menu-search::-webkit-search-decoration,
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-menu-search::-webkit-search-results-button,
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-menu-search::-webkit-search-results-decoration {
+    -webkit-appearance: none !important;
+    display: none !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-menu-search::-webkit-search-cancel-button {
+    -webkit-appearance: none !important;
+    width: 16px;
+    height: 16px;
+    margin-right: 2px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a79d95' stroke-width='1.6' stroke-linecap='round'><line x1='4' y1='4' x2='12' y2='12'/><line x1='12' y1='4' x2='4' y2='12'/></svg>") center center / 12px 12px no-repeat;
+    cursor: pointer;
+    opacity: 0.75;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-menu-search::-webkit-search-cancel-button:hover {
+    opacity: 1;
+}
+
+/* ---------- list reset (single column at every depth) ---------- */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul > li.column,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul > li.column > ul,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .submenu > ul,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .submenu > ul > li.column,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .submenu > ul > li.column > ul {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    columns: auto !important;
+    column-count: 1 !important;
+    column-rule: none !important;
+    list-style: none !important;
+    background: transparent !important;
+    border: 0 !important;
+}
+/* Magento uses .level-1 with margin-left/right 1.5rem to indent the
+ * inner list. Replicate with the wrapper UL bottom padding so the last
+ * item has breathing room like the stock menu. */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul {
+    padding-bottom: 1.5rem !important;
+}
+
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    list-style: none !important;
+}
+
+/* Magento native gives every parent LI a 4.5rem (~72px) bottom margin
+ * to space "groups" in the wide mega-menu. In our 280px drill-down it
+ * just produces a giant empty void between the drilled item's submenu
+ * and whatever comes after. Reset everywhere in the panel. */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .parent {
+    margin-bottom: 0 !important;
+}
+
+/* Magento native gives the L0 menu UL min-height: 720px so the
+ * mega-menu always fills its viewport box. In a single-column drill
+ * panel that just floods the space below the active subtree. */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul > li.column > ul,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .submenu > ul,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .submenu > ul > li.column > ul {
+    min-height: 0 !important;
+}
+
+/* ---------- item rows (Magento native values exactly) ----------
+ *   .admin__menu [class*='level-']:not(.level-0) a {
+ *       display: block; padding: 1.25rem 1.5rem;
+ *   }
+ *   .admin__menu .submenu a       { color: #fcfcfc }
+ *   .admin__menu .submenu a:hover { background-color: #403934 }
+ *   .admin__menu .submenu a:active{ background-color: #322c29; padding 1.35rem 1.5rem 1.15rem }
+ *   default body font-size = 1.4rem (14px)
+ */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > strong > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > strong {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 1.25rem 3.6rem 1.25rem 1.5rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    font-family: inherit !important;
+    font-size: 1.4rem !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+    color: #fcfcfc !important;
+    text-decoration: none !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    cursor: pointer !important;
+    transition: background-color 0.1s linear !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a:hover,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a:focus,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > strong > a:hover,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > strong:hover {
+    background-color: #403934 !important;
+    color: #fcfcfc !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a:active,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > strong > a:active {
+    background-color: #322c29 !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a > span,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > strong > span {
+    display: inline-block !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* Parent rows (have children) get a subtly heavier weight so the eye
+ * can pick out group headers from leaf links at a glance. */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.panth-has-children > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.panth-has-children > strong {
+    font-weight: 500 !important;
+    color: #ffffff !important;
+}
+
+/* Search-result breadcrumb subtitle - tells the user which parent
+ * chain a matched row lives under, so 6 identical "Configuration"
+ * matches stop being indistinguishable. */
+nav.admin__menu.panth-drilldown-enabled .panth-target .panth-breadcrumb {
+    display: block;
+    width: 100%;
+    margin-top: 0.2rem;
+    color: #a79d95;
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-style: normal;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > strong > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > strong {
+    flex-wrap: wrap !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li._active > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.active > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a._active {
+    background-color: #322c29 !important;
+    color: #fcfcfc !important;
+}
+
+/* ---------- chevron for parent rows (Magento submenu-group-title accent #a79d95) ---------- */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.panth-has-children > a::after,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.panth-has-children > strong::after {
+    content: '' !important;
+    position: absolute !important;
+    right: 1.5rem !important;
+    top: 50% !important;
+    width: 0.7rem !important;
+    height: 0.7rem !important;
+    border-right: 1.5px solid #a79d95 !important;
+    border-top: 1.5px solid #a79d95 !important;
+    transform: translateY(-50%) rotate(45deg) !important;
+    transition: border-color 0.1s linear, transform 0.1s linear !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.panth-has-children > a:hover::after,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.panth-has-children > strong:hover::after {
+    border-color: #fcfcfc !important;
+    transform: translate(2px, -50%) rotate(45deg) !important;
+}
+
+/* ---------- "open in new tab" marker ----------
+ * Appears next to any menu link the merchant has flagged in
+ * panth_drilldown/general/new_tab_targets so users know clicking will
+ * spawn a new browser tab instead of replacing the current page.
+ */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .panth-newtab-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+    padding-left: 0.8rem !important;
+    color: #a79d95 !important;
+    line-height: 1 !important;
+    transition: color 0.1s ease !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a:hover .panth-newtab-icon,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > a:focus .panth-newtab-icon {
+    color: #ffffff !important;
+}
+
+/* ---------- nested submenu visibility ---------- */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li > .submenu {
+    display: none !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .panth-active > .submenu {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    z-index: auto !important;
+    overflow: visible !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .panth-active > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .panth-active > strong {
+    display: none !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu .panth-collapsed {
+    display: none !important;
+}
+
+/* ---------- search filter states ---------- */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-searching .panth-filtered-out {
+    display: none !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-searching .panth-filter-expand > .submenu {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-searching .panth-filter-expand > a,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-searching .panth-filter-expand > strong {
+    opacity: 0.65 !important;
+    cursor: default !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-searching .panth-filter-expand > a::after,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-searching .panth-filter-expand > strong::after {
+    display: none !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-searching .panth-filter-match > a {
+    background-color: #403934 !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-searching .panth-filter-match > a:hover {
+    background-color: #322c29 !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu.panth-no-results > ul::after {
+    content: 'No matches';
+    display: block;
+    padding: 1.6rem 1.5rem;
+    color: #a79d95;
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
+/* ---------- column wrapper neutralisation ---------- */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.column,
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu li.column > ul {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* ---------- scroll for long lists ---------- */
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul {
+    max-height: calc(100vh - 130px);
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul::-webkit-scrollbar {
+    width: 4px;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul::-webkit-scrollbar-track {
+    background: transparent;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+nav.admin__menu.panth-drilldown-enabled .panth-target .submenu > ul::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}

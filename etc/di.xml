@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Backend\Model\Menu\Config">
+        <plugin name="panth_adminmenudrilldown_apply_overrides"
+                type="Panth\AdminMenuManager\Plugin\Backend\MenuConfigPlugin"
+                sortOrder="100"/>
+    </type>
+    <type name="Magento\Backend\Block\Menu">
+        <plugin name="panth_adminmenudrilldown_menu_block_cache"
+                type="Panth\AdminMenuManager\Plugin\Backend\MenuBlockPlugin"
+                sortOrder="100"/>
+    </type>
+    <type name="Magento\Backend\Block\AnchorRenderer">
+        <plugin name="panth_adminmenudrilldown_inject_icons"
+                type="Panth\AdminMenuManager\Plugin\Backend\AnchorRendererPlugin"
+                sortOrder="100"/>
+    </type>
+</config>

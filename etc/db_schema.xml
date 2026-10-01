@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="panth_admin_menu_view" resource="default" engine="innodb" comment="Named admin-menu presets (one row per saved view)">
+        <column xsi:type="int" name="view_id" unsigned="true" nullable="false" identity="true" comment="View ID"/>
+        <column xsi:type="varchar" name="label" nullable="false" length="128" comment="Human-readable view name"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="false" default="0" comment="1 = this view's overrides are applied to the live admin menu"/>
+        <column xsi:type="smallint" name="is_default" unsigned="true" nullable="false" default="0" comment="1 = ships with the module, cannot be deleted"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="view_id"/>
+        </constraint>
+        <index referenceId="PANTH_ADMIN_MENU_VIEW_IS_ACTIVE" indexType="btree">
+            <column name="is_active"/>
+        </index>
+    </table>
+    <table name="panth_admin_menu_override" resource="default" engine="innodb" comment="Per-menu-item admin overrides (disable / rename / reorder / icon), grouped by view">
+        <column xsi:type="int" name="override_id" unsigned="true" nullable="false" identity="true" comment="Override ID"/>
+        <column xsi:type="int" name="view_id" unsigned="true" nullable="false" default="1" comment="View this override belongs to"/>
+        <column xsi:type="varchar" name="menu_item_id" nullable="false" length="255" comment="Magento backend menu item id (e.g. Magento_Backend::system)"/>
+        <column xsi:type="smallint" name="is_disabled" unsigned="true" nullable="false" default="0" comment="1 = hidden from the admin menu"/>
+        <column xsi:type="varchar" name="custom_label" nullable="true" length="255" comment="Override label (null = use stock label)"/>
+        <column xsi:type="varchar" name="custom_icon" nullable="true" length="255" comment="Custom icon: emoji, char, or url(...) - rendered as :before content"/>
+        <column xsi:type="varchar" name="custom_color" nullable="true" length="16" comment="Custom colour accent (hex e.g. #1F2E44). Renders as a coloured left stripe on the menu item"/>
+        <column xsi:type="varchar" name="custom_parent_menu_item_id" nullable="true" length="255" comment="Move item under a different parent. NULL = use stock parent"/>
+        <column xsi:type="int" name="sort_order" nullable="true" comment="Override sort index (null = use stock sort)"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="override_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_ADMIN_MENU_OVERRIDE_VIEW_ITEM">
+            <column name="view_id"/>
+            <column name="menu_item_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_ADMIN_MENU_OVERRIDE_VIEW_ID_PANTH_ADMIN_MENU_VIEW_VIEW_ID"
+                    table="panth_admin_menu_override"
+                    column="view_id"
+                    referenceTable="panth_admin_menu_view"
+                    referenceColumn="view_id"
+                    onDelete="CASCADE"/>
+        <index referenceId="PANTH_ADMIN_MENU_OVERRIDE_IS_DISABLED" indexType="btree">
+            <column name="is_disabled"/>
+        </index>
+    </table>
+    <table name="panth_admin_menu_user_pref" resource="default" engine="innodb" comment="Per-admin-user active view selection">
+        <column xsi:type="int" name="admin_user_id" unsigned="true" nullable="false" comment="admin_user.user_id"/>
+        <column xsi:type="int" name="active_view_id" unsigned="true" nullable="false" comment="View this user sees applied to their admin menu"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="admin_user_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_ADMIN_MENU_USER_PREF_ADMIN_USER_ID_ADMIN_USER_USER_ID"
+                    table="panth_admin_menu_user_pref"
+                    column="admin_user_id"
+                    referenceTable="admin_user"
+                    referenceColumn="user_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="PANTH_ADMIN_MENU_USER_PREF_VIEW_ID_PANTH_ADMIN_MENU_VIEW_VIEW_ID"
+                    table="panth_admin_menu_user_pref"
+                    column="active_view_id"
+                    referenceTable="panth_admin_menu_view"
+                    referenceColumn="view_id"
+                    onDelete="CASCADE"/>
+    </table>
+</schema>

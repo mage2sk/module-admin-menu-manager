@@ -1,0 +1,688 @@
+<?php
+/** @var \Panth\AdminMenuManager\Block\Adminhtml\Manager\Tree $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$rows         = $block->getMenuRows();
+$idTitleMap   = $block->getIdTitleMap();
+$overrides    = $block->getOverrides();
+$saveUrl      = $block->getSaveUrl();
+$resetUrl     = $block->getResetUrl();
+$selfId       = \Panth\AdminMenuManager\Block\Adminhtml\Manager\Tree::SELF_PROTECT_ID;
+
+$views        = $block->getAllViews();
+$currentView  = $block->getCurrentViewId();
+$activeView   = $block->getActiveViewIdForCurrentUser();
+$viewSaveUrl     = $block->getViewSaveUrl();
+$viewDeleteUrl   = $block->getViewDeleteUrl();
+$viewActivateUrl = $block->getViewActivateUrl();
+$viewDuplicateUrl= $block->getViewDuplicateUrl();
+$formKey      = $escaper->escapeHtmlAttr($block->getFormKey());
+?>
+<div class="panth-menu-manager">
+
+    <div class="panth-mm__head">
+        <p class="panth-mm__lede">
+            <?= $escaper->escapeHtml(__('Edit label / icon / parent / sort order inline. Save changes to apply.')) ?>
+        </p>
+
+        <!-- View switcher row -->
+        <div class="panth-mm__views">
+            <label class="panth-mm__views-label"><?= $escaper->escapeHtml(__('View')) ?></label>
+            <select id="panth-mm-view-select" class="panth-mm__view-select">
+                <?php foreach ($views as $v): ?>
+                    <option value="<?= (int)$v['view_id'] ?>"
+                            data-switch-url="<?= $escaper->escapeUrl($block->getViewSwitchUrl((int)$v['view_id'])) ?>"
+                            <?= ((int)$v['view_id'] === (int)$currentView) ? 'selected' : '' ?>>
+                        <?= $escaper->escapeHtml($v['label']) ?>
+                        <?= ((int)$v['view_id'] === (int)$activeView) ? '  ' . $escaper->escapeHtml(__('(applied)')) : '' ?>
+                        <?= ((int)$v['is_default'] === 1) ? '  ' . $escaper->escapeHtml(__('(default)')) : '' ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <button type="button" class="panth-mm__view-btn panth-mm__view-btn--primary" id="panth-mm-view-activate-me">
+                <?= $escaper->escapeHtml(__('Apply for me')) ?>
+            </button>
+            <button type="button" class="panth-mm__view-btn" id="panth-mm-view-activate-global">
+                <?= $escaper->escapeHtml(__('Set as system default')) ?>
+            </button>
+            <button type="button" class="panth-mm__view-btn" id="panth-mm-view-new">
+                <?= $escaper->escapeHtml(__('New view')) ?>
+            </button>
+            <button type="button" class="panth-mm__view-btn" id="panth-mm-view-rename">
+                <?= $escaper->escapeHtml(__('Rename')) ?>
+            </button>
+            <button type="button" class="panth-mm__view-btn" id="panth-mm-view-duplicate">
+                <?= $escaper->escapeHtml(__('Duplicate')) ?>
+            </button>
+            <button type="button" class="panth-mm__view-btn panth-mm__view-btn--danger" id="panth-mm-view-delete">
+                <?= $escaper->escapeHtml(__('Delete')) ?>
+            </button>
+        </div>
+
+        <div class="panth-mm__toolbar">
+            <input type="search"
+                   class="panth-mm__search"
+                   id="panth-mm-search"
+                   placeholder="<?= $escaper->escapeHtmlAttr(__('Quick search... (filters by label or id)')) ?>"
+                   autocomplete="off"
+                   spellcheck="false"/>
+            <button type="button" class="panth-mm__view-btn" id="panth-mm-expand-all">
+                <?= $escaper->escapeHtml(__('Expand all')) ?>
+            </button>
+            <button type="button" class="panth-mm__view-btn" id="panth-mm-collapse-all">
+                <?= $escaper->escapeHtml(__('Collapse all')) ?>
+            </button>
+            <span class="panth-mm__count">
+                <?= $escaper->escapeHtml(__('%1 menu items', count($rows))) ?>
+            </span>
+            <a href="https://icons.getbootstrap.com/"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="panth-mm__icon-library-link"
+               title="<?= $escaper->escapeHtmlAttr(__('Browse the Bootstrap Icons library to find class names like bi-house, bi-gear, bi-cart')) ?>">
+                <i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i>
+                <span><?= $escaper->escapeHtml(__('Browse icons')) ?></span>
+                <i class="bi bi-box-arrow-up-right panth-mm__ext-arrow" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+
+    <form method="post" action="<?= $escaper->escapeUrl($saveUrl) ?>" id="panth-mm-form" class="panth-mm__form">
+        <input name="form_key" type="hidden" value="<?= $formKey ?>"/>
+        <input name="view_id" type="hidden" value="<?= (int)$currentView ?>"/>
+
+        <table class="panth-mm__table" id="panth-mm-table">
+            <thead>
+                <tr>
+                    <th class="panth-mm__col-name"><?= $escaper->escapeHtml(__('Menu item')) ?></th>
+                    <th class="panth-mm__col-id"><?= $escaper->escapeHtml(__('ID')) ?></th>
+                    <th class="panth-mm__col-label"><?= $escaper->escapeHtml(__('Custom label')) ?></th>
+                    <th class="panth-mm__col-icon" title="<?= $escaper->escapeHtmlAttr(__('Bootstrap Icons class, e.g. bi-house, bi-gear, bi-cart')) ?>"><?= $escaper->escapeHtml(__('Icon (bi-...)')) ?></th>
+                    <th class="panth-mm__col-parent"><?= $escaper->escapeHtml(__('Parent')) ?></th>
+                    <th class="panth-mm__col-sort"><?= $escaper->escapeHtml(__('Sort')) ?></th>
+                    <th class="panth-mm__col-enabled"><?= $escaper->escapeHtml(__('Enabled')) ?></th>
+                    <th class="panth-mm__col-actions"></th>
+                </tr>
+            </thead>
+            <tbody id="panth-mm-tbody">
+            <?php foreach ($rows as $row): ?>
+                <?php
+                $id          = $row['id'];
+                $depth       = (int) $row['depth'];
+                $title       = $row['title'];
+                $isParent    = $row['has_children'];
+                $isSelf      = ($id === $selfId);
+                $defaultSort = (int) $row['default_sort'];
+                $defaultParent = $row['parent_id'];
+
+                $cfg         = $overrides[$id] ?? [
+                    'is_disabled'                => 0,
+                    'custom_label'               => null,
+                    'custom_icon'                => null,
+                    'custom_color'               => null,
+                    'custom_parent_menu_item_id' => null,
+                    'sort_order'                 => null,
+                ];
+                $isEnabled   = ((int) $cfg['is_disabled']) === 0;
+                $label       = $cfg['custom_label'] ?? '';
+                $icon        = $cfg['custom_icon'] ?? '';
+                $color       = $cfg['custom_color'] ?? '';
+                $parentOver  = $cfg['custom_parent_menu_item_id'];
+                $effParent   = $parentOver !== null && $parentOver !== '' ? $parentOver : $defaultParent;
+                $sort        = $cfg['sort_order'];
+                $effSort     = $sort !== null ? (int) $sort : $defaultSort;
+                $hasOverride = ($cfg['is_disabled'] || $cfg['custom_label'] !== null
+                              || $cfg['custom_icon'] !== null || $cfg['custom_color'] !== null
+                              || $cfg['custom_parent_menu_item_id'] !== null
+                              || $cfg['sort_order'] !== null);
+                ?>
+                <tr class="panth-mm__row<?= $depth === 0 ? ' panth-mm__row--root' : '' ?><?= !$isEnabled ? ' panth-mm__row--disabled' : '' ?><?= $isParent ? ' panth-mm__row--has-children' : '' ?>"
+                    data-id="<?= $escaper->escapeHtmlAttr($id) ?>"
+                    data-parent-id="<?= $escaper->escapeHtmlAttr($defaultParent) ?>"
+                    data-depth="<?= (int)$depth ?>"
+                    data-has-children="<?= $isParent ? 1 : 0 ?>"
+                    data-default-parent="<?= $escaper->escapeHtmlAttr($defaultParent) ?>"
+                    data-default-sort="<?= (int)$defaultSort ?>"
+                    data-search="<?= $escaper->escapeHtmlAttr(strtolower($title . ' ' . $id)) ?>">
+                    <td class="panth-mm__col-name">
+                        <span class="panth-mm__indent" style="--d: <?= (int) $depth ?>"></span>
+                        <?php if ($isParent): ?>
+                            <button type="button" class="panth-mm__chev-btn" aria-label="<?= $escaper->escapeHtmlAttr(__('Toggle children')) ?>" aria-expanded="true">
+                                <svg class="panth-mm__chev" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                                    <path d="M3 2 L8 6 L3 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        <?php else: ?>
+                            <span class="panth-mm__chev-btn panth-mm__chev-btn--leaf" aria-hidden="true"></span>
+                        <?php endif; ?>
+                        <span class="panth-mm__color-cell<?= $color !== '' ? ' panth-mm__color-cell--set' : '' ?>"
+                              data-row-id="<?= $escaper->escapeHtmlAttr($id) ?>"
+                              style="--swatch: <?= $color !== '' ? $escaper->escapeHtmlAttr($color) : 'transparent' ?>;"
+                              title="<?= $escaper->escapeHtmlAttr(__('Pick a colour accent - appears as a coloured stripe on the menu item.')) ?>">
+                            <label class="panth-mm__color-swatch" aria-label="<?= $escaper->escapeHtmlAttr(__('Pick colour')) ?>">
+                                <input type="color"
+                                       class="panth-mm__color-input"
+                                       value="<?= $color !== '' ? $escaper->escapeHtmlAttr($color) : '#1f2e44' ?>"/>
+                            </label>
+                            <input type="hidden"
+                                   name="items[<?= $escaper->escapeHtmlAttr($id) ?>][custom_color]"
+                                   class="panth-mm__color-hidden"
+                                   value="<?= $escaper->escapeHtmlAttr($color) ?>"/>
+                            <button type="button"
+                                    class="panth-mm__color-clear"
+                                    title="<?= $escaper->escapeHtmlAttr(__('Clear colour')) ?>"
+                                    aria-label="<?= $escaper->escapeHtmlAttr(__('Clear colour')) ?>">×</button>
+                        </span>
+                        <span class="panth-mm__title<?= $hasOverride ? ' panth-mm__title--override' : '' ?>">
+                            <?= $escaper->escapeHtml($title) ?>
+                        </span>
+                    </td>
+                    <td class="panth-mm__col-id">
+                        <code><?= /* @noEscape */ str_replace('::', '::<wbr>', $escaper->escapeHtml($id)) ?></code>
+                    </td>
+                    <td class="panth-mm__col-label">
+                        <input type="text"
+                               name="items[<?= $escaper->escapeHtmlAttr($id) ?>][custom_label]"
+                               value="<?= $escaper->escapeHtmlAttr((string) $label) ?>"
+                               placeholder="<?= $escaper->escapeHtmlAttr($title) ?>"
+                               maxlength="255"
+                               class="input-text panth-mm__input"/>
+                    </td>
+                    <td class="panth-mm__col-icon">
+                        <div class="panth-mm__icon-wrap">
+                            <span class="panth-mm__icon-preview" aria-hidden="true">
+                                <?php if ($icon !== '' && preg_match('/^bi-[a-z0-9-]+$/i', $icon)): ?>
+                                    <i class="bi <?= $escaper->escapeHtmlAttr(strtolower($icon)) ?>"></i>
+                                <?php elseif ($icon !== ''): ?>
+                                    <span class="panth-mm__icon-glyph"><?= $escaper->escapeHtml($icon) ?></span>
+                                <?php endif; ?>
+                            </span>
+                            <input type="text"
+                                   name="items[<?= $escaper->escapeHtmlAttr($id) ?>][custom_icon]"
+                                   value="<?= $escaper->escapeHtmlAttr((string) $icon) ?>"
+                                   placeholder="<?= $escaper->escapeHtmlAttr(__('bi-house')) ?>"
+                                   maxlength="255"
+                                   class="input-text panth-mm__input panth-mm__input--icon"/>
+                        </div>
+                    </td>
+                    <td class="panth-mm__col-parent">
+                        <?php
+                        // Lazy-loaded select - only the current selection is
+                        // emitted; the full picker is cloned in on first focus
+                        // from a hidden <template> below. Cuts initial DOM
+                        // from ~106K options to ~326 page-wide.
+                        $currentParentValue = $parentOver !== null && $parentOver !== '' ? $parentOver : '';
+                        $stockLabel = $defaultParent === ''
+                            ? __('Top level')
+                            : ($idTitleMap[$defaultParent]['title'] ?? $defaultParent);
+
+                        $isOverridden = $currentParentValue !== '';
+                        if (!$isOverridden) {
+                            $currentLabel = $stockLabel;
+                        } elseif ($currentParentValue === '__root__') {
+                            $currentLabel = __('Top level');
+                        } else {
+                            $currentLabel = $idTitleMap[$currentParentValue]['title'] ?? $currentParentValue;
+                        }
+                        ?>
+                        <select name="items[<?= $escaper->escapeHtmlAttr($id) ?>][custom_parent_menu_item_id]"
+                                class="admin__control-select panth-mm__input panth-mm__select-parent<?= $isOverridden ? ' panth-mm__select-parent--overridden' : '' ?>"
+                                data-default-parent="<?= $escaper->escapeHtmlAttr($defaultParent) ?>"
+                                data-stock-label="<?= $escaper->escapeHtmlAttr($stockLabel) ?>"
+                                data-self-id="<?= $escaper->escapeHtmlAttr($id) ?>"
+                                data-current-value="<?= $escaper->escapeHtmlAttr($currentParentValue) ?>"
+                                title="<?= $escaper->escapeHtmlAttr(
+                                    $isOverridden
+                                        ? __('Moved here. Stock parent was: %1', $stockLabel)
+                                        : __('Stock parent - drag-drop to move, or pick a different parent here')
+                                ) ?>">
+                            <option value="<?= $escaper->escapeHtmlAttr($currentParentValue) ?>" selected>
+                                <?= $escaper->escapeHtml($currentLabel) ?>
+                            </option>
+                        </select>
+                    </td>
+                    <td class="panth-mm__col-sort">
+                        <input type="number"
+                               name="items[<?= $escaper->escapeHtmlAttr($id) ?>][sort_order]"
+                               value="<?= (int)$effSort ?>"
+                               step="1"
+                               class="input-text panth-mm__input panth-mm__input--num panth-mm__input--sort"/>
+                        <input type="hidden"
+                               name="items[<?= $escaper->escapeHtmlAttr($id) ?>][default_sort]"
+                               value="<?= (int)$defaultSort ?>"/>
+                    </td>
+                    <td class="panth-mm__col-enabled">
+                        <?php if ($isSelf): ?>
+                            <span class="panth-mm__lock" title="<?= $escaper->escapeHtmlAttr(__('Cannot disable this page.')) ?>">
+                                <?= $escaper->escapeHtml(__('Locked')) ?>
+                            </span>
+                            <input type="hidden" name="items[<?= $escaper->escapeHtmlAttr($id) ?>][is_disabled]" value="0"/>
+                        <?php else: ?>
+                            <label class="panth-mm__switch">
+                                <input type="hidden" name="items[<?= $escaper->escapeHtmlAttr($id) ?>][is_disabled]" value="1"/>
+                                <input type="checkbox"
+                                       name="items[<?= $escaper->escapeHtmlAttr($id) ?>][is_disabled]"
+                                       value="0"
+                                       <?= $isEnabled ? 'checked' : '' ?>/>
+                                <span class="panth-mm__switch-track"></span>
+                            </label>
+                        <?php endif; ?>
+                    </td>
+                    <td class="panth-mm__col-actions">
+                        <?php if ($hasOverride && !$isSelf): ?>
+                            <button type="button"
+                                    class="panth-mm__reset"
+                                    data-id="<?= $escaper->escapeHtmlAttr($id) ?>">
+                                <?= $escaper->escapeHtml(__('Reset')) ?>
+                            </button>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <div class="panth-mm__sticky-actions">
+            <button type="submit" class="action-primary"><?= $escaper->escapeHtml(__('Save changes')) ?></button>
+            <span class="panth-mm__hint">
+                <?= $escaper->escapeHtml(__('Saving flushes the menu cache. Refresh the admin tab to see the new menu.')) ?>
+            </span>
+        </div>
+    </form>
+
+    <!-- Single shared parent-options template, cloned into each row's
+         <select> on first focus to keep initial render fast. -->
+    <template id="panth-mm-parent-options-template"><?php
+        foreach ($idTitleMap as $optId => $optInfo) {
+            echo '<option value="' . $escaper->escapeHtmlAttr($optId) . '">'
+                . str_repeat('· ', max(0, (int)$optInfo['depth']))
+                . $escaper->escapeHtml($optInfo['title'])
+                . '</option>';
+        }
+    ?></template>
+
+    <!-- Hidden helper forms posted by the view-toolbar buttons -->
+    <form method="post" action="<?= $escaper->escapeUrl($resetUrl) ?>" id="panth-mm-reset-form" style="display:none">
+        <input name="form_key" type="hidden" value="<?= $formKey ?>"/>
+        <input type="hidden" name="view_id" value="<?= (int)$currentView ?>"/>
+        <input type="hidden" name="menu_item_id" id="panth-mm-reset-id" value=""/>
+    </form>
+    <form method="post" action="<?= $escaper->escapeUrl($viewSaveUrl) ?>" id="panth-mm-view-save-form" style="display:none">
+        <input name="form_key" type="hidden" value="<?= $formKey ?>"/>
+        <input type="hidden" name="view_id" id="panth-mm-view-save-id" value=""/>
+        <input type="hidden" name="label" id="panth-mm-view-save-label" value=""/>
+    </form>
+    <form method="post" action="<?= $escaper->escapeUrl($viewDeleteUrl) ?>" id="panth-mm-view-delete-form" style="display:none">
+        <input name="form_key" type="hidden" value="<?= $formKey ?>"/>
+        <input type="hidden" name="view_id" id="panth-mm-view-delete-id" value=""/>
+    </form>
+    <form method="post" action="<?= $escaper->escapeUrl($viewActivateUrl) ?>" id="panth-mm-view-activate-form" style="display:none">
+        <input name="form_key" type="hidden" value="<?= $formKey ?>"/>
+        <input type="hidden" name="view_id" id="panth-mm-view-activate-id" value=""/>
+        <input type="hidden" name="scope" id="panth-mm-view-activate-scope" value="me"/>
+    </form>
+    <form method="post" action="<?= $escaper->escapeUrl($viewDuplicateUrl) ?>" id="panth-mm-view-duplicate-form" style="display:none">
+        <input name="form_key" type="hidden" value="<?= $formKey ?>"/>
+        <input type="hidden" name="view_id" id="panth-mm-view-duplicate-id" value=""/>
+        <input type="hidden" name="label" id="panth-mm-view-duplicate-label" value=""/>
+    </form>
+
+</div>
+
+<script>
+require([
+    'jquery',
+    'Magento_Ui/js/modal/confirm',
+    'Magento_Ui/js/modal/prompt',
+    'mage/translate',
+    'domReady!'
+], function ($, confirm, prompt) {
+    'use strict';
+
+    /**
+     * Magento-styled confirm. opts: { title, content, onConfirm }
+     */
+    function mageConfirm(opts) {
+        confirm({
+            title: opts.title || $.mage.__('Confirm'),
+            content: opts.content || '',
+            actions: {
+                confirm: function () {
+                    if (typeof opts.onConfirm === 'function') opts.onConfirm();
+                },
+                cancel: function () {}
+            },
+            buttons: [{
+                text: $.mage.__('Cancel'),
+                class: 'action-secondary action-dismiss',
+                click: function () { this.closeModal(); }
+            }, {
+                text: opts.confirmText || $.mage.__('OK'),
+                class: 'action-primary action-accept',
+                click: function (e) { this.closeModal(e, true); }
+            }]
+        });
+    }
+
+    /**
+     * Magento-styled prompt. opts: { title, content, value, onConfirm }
+     */
+    function magePrompt(opts) {
+        prompt({
+            title: opts.title || $.mage.__('Enter value'),
+            content: opts.content || '',
+            value: opts.value || '',
+            actions: {
+                confirm: function (val) {
+                    var clean = (val || '').toString().trim();
+                    if (clean === '') return;
+                    if (typeof opts.onConfirm === 'function') opts.onConfirm(clean);
+                },
+                cancel: function () {}
+            },
+            buttons: [{
+                text: $.mage.__('Cancel'),
+                class: 'action-secondary action-dismiss',
+                click: function () { this.closeModal(); }
+            }, {
+                text: opts.confirmText || $.mage.__('OK'),
+                class: 'action-primary action-accept',
+                click: function (e) { this.closeModal(e, true); }
+            }]
+        });
+    }
+
+    /* -------- Expand / collapse tree -------- */
+    var viewId = $('#panth-mm-form input[name="view_id"]').val() || '0';
+    var lsKey = 'panth-mm-collapsed:' + viewId;
+    /**
+     * Stored shape: { __initialised: 1, "<id>": 1, ... }
+     * The marker tells us whether this view's tree state has ever been
+     * persisted; the first ever load defaults to "everything below L0
+     * collapsed" so 326-row pages don't lay out 326 expanded rows on
+     * first paint.
+     */
+    var collapsed = {};
+    try {
+        var stored = window.localStorage.getItem(lsKey);
+        if (stored) collapsed = JSON.parse(stored) || {};
+    } catch (e) {}
+    if (!collapsed.__initialised) {
+        $('#panth-mm-tbody > tr[data-has-children="1"]').each(function () {
+            collapsed[$(this).attr('data-id')] = 1;
+        });
+        collapsed.__initialised = 1;
+    }
+
+    function persistCollapsed() {
+        try { window.localStorage.setItem(lsKey, JSON.stringify(collapsed)); } catch (e) {}
+    }
+
+    function isAncestorCollapsed(id) {
+        var $row = $('#panth-mm-tbody > tr[data-id="' + cssEscape(id) + '"]').first();
+        if (!$row.length) return false;
+        var parentId = $row.attr('data-parent-id') || '';
+        while (parentId) {
+            if (collapsed[parentId]) return true;
+            var $p = $('#panth-mm-tbody > tr[data-id="' + cssEscape(parentId) + '"]').first();
+            parentId = $p.attr('data-parent-id') || '';
+        }
+        return false;
+    }
+
+    function applyCollapsedState() {
+        $('#panth-mm-tbody > tr').each(function () {
+            var $tr = $(this);
+            var id = $tr.attr('data-id');
+            var hidden = isAncestorCollapsed(id);
+            $tr.toggleClass('panth-mm__row--hidden-by-collapse', hidden);
+            var isCollapsed = !!collapsed[id];
+            $tr.toggleClass('panth-mm__row--collapsed', isCollapsed);
+            $tr.find('.panth-mm__chev-btn').attr('aria-expanded', isCollapsed ? 'false' : 'true');
+        });
+    }
+
+    function cssEscape(s) {
+        return String(s).replace(/(["\\])/g, '\\$1');
+    }
+
+    $('#panth-mm-tbody').on('click', '.panth-mm__chev-btn', function () {
+        var $row = $(this).closest('tr');
+        var id = $row.attr('data-id');
+        if (!id) return;
+        if (collapsed[id]) { delete collapsed[id]; } else { collapsed[id] = 1; }
+        persistCollapsed();
+        applyCollapsedState();
+    });
+
+    $('#panth-mm-expand-all').on('click', function () {
+        collapsed = {};
+        persistCollapsed();
+        applyCollapsedState();
+    });
+    $('#panth-mm-collapse-all').on('click', function () {
+        collapsed = {};
+        $('#panth-mm-tbody > tr[data-has-children="1"]').each(function () {
+            collapsed[$(this).attr('data-id')] = 1;
+        });
+        persistCollapsed();
+        applyCollapsedState();
+    });
+
+    applyCollapsedState();
+
+    /* -------- Quick search (also clears collapse so matches show) -------- */
+    var search = document.getElementById('panth-mm-search');
+    var rows = function () { return document.querySelectorAll('.panth-mm__row'); };
+    if (search) {
+        search.addEventListener('input', function () {
+            var q = (search.value || '').trim().toLowerCase();
+            var tokens = q.split(/\s+/).filter(Boolean);
+            Array.prototype.forEach.call(rows(), function (r) {
+                if (!q) { r.classList.remove('panth-mm__row--filtered-out'); return; }
+                var hay = r.getAttribute('data-search') || '';
+                var hit = tokens.every(function (t) { return hay.indexOf(t) !== -1; });
+                r.classList.toggle('panth-mm__row--filtered-out', !hit);
+            });
+            // While searching, ignore collapse state so matches are visible.
+            $('.panth-mm__row').toggleClass('panth-mm__row--searching', !!q);
+        });
+    }
+
+    /* -------- Reset row -------- */
+    $('.panth-mm__reset').on('click', function () {
+        var id = $(this).data('id');
+        if (!id) return;
+        mageConfirm({
+            title: $.mage.__('Clear menu override'),
+            content: $.mage.__('Clear the stored override for') + ' <code>' + $('<div/>').text(id).html() + '</code>?',
+            confirmText: $.mage.__('Clear'),
+            onConfirm: function () {
+                $('#panth-mm-reset-id').val(id);
+                $('#panth-mm-reset-form').trigger('submit');
+            }
+        });
+    });
+
+    /* -------- Enabled toggle visual -------- */
+    $('.panth-mm__switch input[type="checkbox"]').on('change', function () {
+        $(this).closest('tr').toggleClass('panth-mm__row--disabled', !this.checked);
+    });
+
+    /* -------- View switcher dropdown -------- */
+    var $viewSelect = $('#panth-mm-view-select');
+    function currentViewId() { return parseInt($viewSelect.val(), 10) || 0; }
+    function currentViewLabel() { return $viewSelect.find('option:selected').text().split('(')[0].trim(); }
+
+    $viewSelect.on('change', function () {
+        var url = $viewSelect.find('option:selected').data('switch-url');
+        if (url) window.location.href = url;
+    });
+    $('#panth-mm-view-activate-me').on('click', function () {
+        $('#panth-mm-view-activate-id').val(currentViewId());
+        $('#panth-mm-view-activate-scope').val('me');
+        $('#panth-mm-view-activate-form').trigger('submit');
+    });
+    function escapeHtml(s) {
+        return $('<div/>').text(s == null ? '' : String(s)).html();
+    }
+
+    $('#panth-mm-view-activate-global').on('click', function () {
+        var label = currentViewLabel();
+        mageConfirm({
+            title: $.mage.__('Set as system default'),
+            content: $.mage.__('Make') + ' <strong>' + escapeHtml(label) + '</strong> '
+                   + $.mage.__('the system default for everyone without a personal preference?'),
+            confirmText: $.mage.__('Set as default'),
+            onConfirm: function () {
+                $('#panth-mm-view-activate-id').val(currentViewId());
+                $('#panth-mm-view-activate-scope').val('global');
+                $('#panth-mm-view-activate-form').trigger('submit');
+            }
+        });
+    });
+    $('#panth-mm-view-new').on('click', function () {
+        magePrompt({
+            title: $.mage.__('New view'),
+            content: $.mage.__('Name the new view:'),
+            value: '',
+            confirmText: $.mage.__('Create'),
+            onConfirm: function (label) {
+                $('#panth-mm-view-save-id').val('');
+                $('#panth-mm-view-save-label').val(label);
+                $('#panth-mm-view-save-form').trigger('submit');
+            }
+        });
+    });
+    $('#panth-mm-view-rename').on('click', function () {
+        magePrompt({
+            title: $.mage.__('Rename view'),
+            content: $.mage.__('Rename view to:'),
+            value: currentViewLabel(),
+            confirmText: $.mage.__('Rename'),
+            onConfirm: function (label) {
+                $('#panth-mm-view-save-id').val(currentViewId());
+                $('#panth-mm-view-save-label').val(label);
+                $('#panth-mm-view-save-form').trigger('submit');
+            }
+        });
+    });
+    $('#panth-mm-view-duplicate').on('click', function () {
+        magePrompt({
+            title: $.mage.__('Duplicate view'),
+            content: $.mage.__('Name for the duplicated view:'),
+            value: currentViewLabel() + ' copy',
+            confirmText: $.mage.__('Duplicate'),
+            onConfirm: function (label) {
+                $('#panth-mm-view-duplicate-id').val(currentViewId());
+                $('#panth-mm-view-duplicate-label').val(label);
+                $('#panth-mm-view-duplicate-form').trigger('submit');
+            }
+        });
+    });
+    $('#panth-mm-view-delete').on('click', function () {
+        var label = currentViewLabel();
+        mageConfirm({
+            title: $.mage.__('Delete view'),
+            content: $.mage.__('Delete view') + ' <strong>' + escapeHtml(label) + '</strong>? '
+                   + $.mage.__('All its overrides will be discarded.'),
+            confirmText: $.mage.__('Delete'),
+            onConfirm: function () {
+                $('#panth-mm-view-delete-id').val(currentViewId());
+                $('#panth-mm-view-delete-form').trigger('submit');
+            }
+        });
+    });
+
+    /* -------- Per-item colour accent ----------
+     * The hidden input is the source of truth (what gets posted).
+     * The native <input type="color"> just drives picking; on change it
+     * copies its value into the hidden input and updates the swatch
+     * preview. The × button clears both. */
+    $('#panth-mm-tbody').on('input change', '.panth-mm__color-input', function () {
+        var $cell = $(this).closest('.panth-mm__color-cell');
+        var val = (this.value || '').toLowerCase();
+        $cell.find('.panth-mm__color-hidden').val(val);
+        $cell.css('--swatch', val);
+        $cell.addClass('panth-mm__color-cell--set');
+    });
+    $('#panth-mm-tbody').on('click', '.panth-mm__color-clear', function () {
+        var $cell = $(this).closest('.panth-mm__color-cell');
+        $cell.find('.panth-mm__color-hidden').val('');
+        $cell.css('--swatch', 'transparent');
+        $cell.removeClass('panth-mm__color-cell--set');
+    });
+
+    /* -------- Live preview of bi-* icon next to its input ---------- */
+    function updateIconPreview(input) {
+        var $input = $(input);
+        var val = (input.value || '').trim();
+        var $preview = $input.closest('.panth-mm__icon-wrap').find('.panth-mm__icon-preview');
+        $preview.empty();
+        if (!val) return;
+        if (/^bi-[a-z0-9-]+$/i.test(val)) {
+            $preview.append('<i class="bi ' + val.toLowerCase() + '"></i>');
+        } else {
+            $preview.append('<span class="panth-mm__icon-glyph">' + escapeHtml(val) + '</span>');
+        }
+    }
+    $('#panth-mm-tbody').on('input change', '.panth-mm__input--icon', function () {
+        updateIconPreview(this);
+    });
+
+    /* -------- Lazy-populate parent <select>s on first focus --------
+     * Initial render only contains each select's currently selected option
+     * (~326 options total page-wide). The full options list is cloned in
+     * from #panth-mm-parent-options-template the first time the user
+     * interacts with a particular select. */
+    var parentOptionsHtml = null;
+    function getParentOptionsHtml() {
+        if (parentOptionsHtml === null) {
+            var tpl = document.getElementById('panth-mm-parent-options-template');
+            parentOptionsHtml = tpl ? tpl.innerHTML : '';
+        }
+        return parentOptionsHtml;
+    }
+
+    function populateParentSelect(sel) {
+        if (sel.dataset.panthLoaded === '1') return;
+        var $sel = $(sel);
+        var currentValue = sel.dataset.currentValue || '';
+        var stockLabel = sel.dataset.stockLabel || '';
+        var defaultParent = sel.dataset.defaultParent || '';
+        var selfId = sel.dataset.selfId || '';
+
+        // Build the prefix: "use stock" sentinel, "Top level" sentinel, then
+        // a disabled separator before the full alphabetised picker.
+        var prefix =
+            '<option value="">↳ ' + $.mage.__('Use stock parent') + ' (' + stockLabel + ')</option>'
+          + '<option value="__root__">⤴ ' + $.mage.__('Move to top level') + '</option>'
+          + '<option value="" disabled>──────────</option>';
+
+        // Strip the row's own id from the cloned options so a row can't
+        // become its own parent.
+        var allOptions = getParentOptionsHtml();
+        if (selfId) {
+            // Cheap, exact-match drop using a regex with the escaped id.
+            var safeId = selfId.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            var re = new RegExp('<option value="' + safeId + '">[^<]*</option>', 'g');
+            allOptions = allOptions.replace(re, '');
+        }
+
+        $sel.html(prefix + allOptions);
+        // Restore the original selection.
+        sel.value = currentValue;
+        sel.dataset.panthLoaded = '1';
+    }
+
+    $('#panth-mm-tbody').on('focusin', '.panth-mm__select-parent', function () {
+        populateParentSelect(this);
+    });
+    // Also populate before submit so the form posts the right value if
+    // a user changed it via keyboard without focus events firing.
+    $('#panth-mm-form').on('submit', function () {
+        $('.panth-mm__select-parent').each(function () { populateParentSelect(this); });
+    });
+
+});
+</script>

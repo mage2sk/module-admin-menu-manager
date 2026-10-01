@@ -1,0 +1,47 @@
+{
+    "name": "mage2kishan/module-admin-menu-manager",
+    "description": "Customises the Magento 2 backend menu \u2014 hide, rename, re-icon, recolor, reorder and reparent any item, grouped into named 'views' you can flip between with one click. Includes an optional drilldown rendering style that adds a back button + search box to crowded L0 panels. Admin-only, no storefront impact.",
+    "type": "magento2-module",
+    "version": "1.0.15",
+    "license": "proprietary",
+    "keywords": [
+        "magento2",
+        "magento2-module",
+        "admin",
+        "backend",
+        "menu",
+        "navigation",
+        "drilldown",
+        "panth"
+    ],
+    "homepage": "https://kishansavaliya.com",
+    "support": {
+        "email": "kishansavaliyakb@gmail.com",
+        "source": "https://kishansavaliya.com"
+    },
+    "authors": [
+        {
+            "name": "Kishan Savaliya",
+            "email": "kishansavaliyakb@gmail.com",
+            "homepage": "https://kishansavaliya.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "~8.1.0||~8.2.0||~8.3.0||~8.4.0",
+        "mage2kishan/module-core": "^1.0",
+        "magento/framework": "^103.0",
+        "magento/module-backend": "^102.0",
+        "magento/module-config": "^101.2",
+        "magento/module-ui": "^101.2",
+        "magento/module-user": "^101.2"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Panth\\AdminMenuManager\\": ""
+        }
+    }
+}

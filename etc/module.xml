@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Panth Infotech. All rights reserved.
+ *
+ * Panth_AdminMenuManager - module declaration.
+ *
+ * Customises the Magento backend menu (System -> Stores -> Admin Menu
+ * Manager) with named "views" of overrides - hide, rename, recolor,
+ * re-icon, reorder and reparent any menu item - plus an optional
+ * drilldown rendering style for crowded L0 menus.
+ *
+ * Sequence:
+ *  - Panth_Core      - shared base module (logging, registry, etc.)
+ *  - Magento_Backend - backend menu Builder hooked by the plugin
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Panth_AdminMenuManager" setup_version="1.0.0">
+        <sequence>
+            <module name="Panth_Core"/>
+            <module name="Magento_Backend"/>
+            <module name="Magento_User"/>
+        </sequence>
+    </module>
+</config>

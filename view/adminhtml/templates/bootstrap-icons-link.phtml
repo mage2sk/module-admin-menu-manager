@@ -1,0 +1,8 @@
+<?php
+/** @var \Panth\AdminMenuManager\Block\Adminhtml\BootstrapIconsLink $block */
+/** @var \Magento\Framework\Escaper $escaper */
+if (!$block->isNeeded()) {
+    return;
+}
+?>
+<link rel="stylesheet" href="<?= $escaper->escapeUrl($block->getStylesheetUrl()) ?>"/>

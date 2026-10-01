@@ -1,0 +1,24 @@
+/* Spacing for icons we inject into menu anchors. */
+nav.admin__menu .panth-menu-bi-icon,
+nav.admin__menu .panth-menu-emoji-icon {
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: -1px;
+    line-height: 1;
+}
+nav.admin__menu .panth-menu-bi-icon {
+    font-size: 1.4rem;
+    color: inherit;
+}
+nav.admin__menu .panth-menu-emoji-icon {
+    font-size: 1.4rem;
+    font-style: normal;
+}
+
+/* L0 sidebar: stack our icon above the label like Magento's own. */
+nav.admin__menu .level-0 > a .panth-menu-bi-icon,
+nav.admin__menu .level-0 > a .panth-menu-emoji-icon {
+    display: block;
+    margin: 0 auto 4px;
+    font-size: 2.2rem;
+}
