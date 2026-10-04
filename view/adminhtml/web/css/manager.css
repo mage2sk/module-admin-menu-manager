@@ -1,0 +1,562 @@
+/* ============================================================
+ * Panth Admin Menu Manager
+ * Standard Magento admin chrome - same palette as the rest of
+ * the Stores -> Settings pages. No custom card styling.
+ *
+ * Type scale (matches Magento adminhtml defaults):
+ *   - h1 / page title       22px / weight 600
+ *   - h2 / sub-section      16px / weight 600
+ *   - body / inputs / btns  13px / weight 400
+ *   - secondary / hints     12px / weight 400
+ *   - micro / pills / mono  11-12px (intentional accents)
+ * ============================================================ */
+
+.panth-menu-manager {
+    margin: 0 0 32px;
+}
+
+.panth-mm__head {
+    margin: 0 0 18px;
+    padding: 18px 20px 14px;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 0;
+}
+.panth-mm__title {
+    margin: 0 0 4px;
+    padding: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #41362f;
+    line-height: 1.2;
+}
+.panth-mm__lede {
+    margin: 0 0 12px;
+    color: #666;
+    font-size: 13px;
+}
+.panth-mm__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.panth-mm__search {
+    flex: 1 1 320px;
+    max-width: 480px;
+    height: 32px;
+    padding: 0 10px 0 32px;
+    background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%23777" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><line x1="11" y1="11" x2="14" y2="14"/></svg>') no-repeat 8px center;
+    background-size: 16px 16px;
+    border: 1px solid #adadad;
+    border-radius: 0;
+    color: #303030;
+    font-size: 13px;
+}
+.panth-mm__search:focus {
+    outline: none;
+    border-color: #1F2E44;
+    background-color: #fff;
+}
+.panth-mm__count {
+    color: #666;
+    font-size: 12px;
+}
+.panth-mm__icon-library-link {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    background: #fff;
+    border: 1px solid #adadad;
+    border-radius: 0;
+    color: #303030;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.1s ease, border-color 0.1s ease;
+}
+.panth-mm__icon-library-link:hover,
+.panth-mm__icon-library-link:focus {
+    background: #f5f5f5;
+    border-color: #878787;
+    color: #303030;
+    text-decoration: none;
+}
+.panth-mm__icon-library-link i {
+    font-size: 14px;
+    line-height: 1;
+}
+.panth-mm__icon-library-link .panth-mm__ext-arrow {
+    font-size: 11px;
+    opacity: 0.75;
+}
+
+/* form chrome */
+.panth-mm__form {
+    background: #fff;
+    border: 1px solid #ccc;
+}
+
+/* table */
+.panth-mm__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 13px;
+}
+.panth-mm__table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: 38px;
+    padding: 0 12px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ccc;
+    color: #41362f;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+}
+.panth-mm__col-name    { width: 20%; }
+.panth-mm__col-id      { width: 18%; }
+.panth-mm__col-label   { width: 16%; }
+.panth-mm__col-icon    { width: 150px; min-width: 150px; }
+.panth-mm__col-parent  { width: 18%; min-width: 220px; }
+.panth-mm__col-sort    { width: 80px;  min-width: 80px; }
+.panth-mm__col-enabled { width: 70px;  min-width: 70px; text-align: center; }
+.panth-mm__col-actions { width: 70px;  min-width: 70px; text-align: right; }
+.panth-mm__icon-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+.panth-mm__icon-preview {
+    flex: 0 0 24px;
+    width: 24px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #41362f;
+    font-size: 16px;
+    line-height: 1;
+}
+.panth-mm__icon-preview i { line-height: 1; }
+.panth-mm__icon-glyph { font-style: normal; }
+.panth-mm__input--icon { flex: 1 1 auto; text-align: left; font-size: 13px; }
+.panth-mm__select-parent {
+    box-sizing: border-box;
+    width: 100%;
+    height: 30px;
+    padding: 0 24px 0 8px;
+    background: #fff;
+    border: 1px solid #adadad;
+    border-radius: 0;
+    color: #303030;
+    font-family: inherit;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+.panth-mm__select-parent:focus { outline: none; border-color: #1F2E44; }
+/* Highlight rows where the parent was overridden (moved to a non-stock
+ * parent) so they're easy to spot in a long list. */
+.panth-mm__select-parent--overridden {
+    color: #1F2E44;
+    font-weight: 600;
+    background: #fbfaf6;
+    border-color: #1F2E44;
+}
+
+/* View switcher */
+.panth-mm__views {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 12px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid #ccc;
+}
+.panth-mm__views-label { color: #41362f; font-size: 13px; font-weight: 600; margin-right: 4px; }
+.panth-mm__view-select {
+    flex: 1 1 280px;
+    max-width: 360px;
+    box-sizing: border-box;
+    height: 32px;
+    padding: 0 8px;
+    background: #fff;
+    border: 1px solid #adadad;
+    border-radius: 0;
+    color: #303030;
+    font-size: 13px;
+}
+.panth-mm__view-btn {
+    height: 32px;
+    padding: 0 12px;
+    background: #fff;
+    border: 1px solid #adadad;
+    border-radius: 0;
+    color: #303030;
+    font-size: 13px;
+    line-height: 30px;
+    cursor: pointer;
+    transition: background 0.1s ease, color 0.1s ease;
+}
+.panth-mm__view-btn:hover { background: #f5f5f5; }
+.panth-mm__view-btn--primary { background: #514943; color: #fff; border-color: #514943; }
+.panth-mm__view-btn--primary:hover,
+.panth-mm__view-btn--primary:focus { background: #35302c; border-color: #35302c; color: #fff; }
+.panth-mm__view-btn--danger { color: #c0392b; }
+.panth-mm__view-btn--danger:hover { background: #fdecea; color: #c0392b; }
+
+
+.panth-mm__row > td {
+    padding: 8px 12px;
+    border-bottom: 1px dashed #e6e6e6;
+    vertical-align: middle;
+}
+.panth-mm__row:hover > td {
+    background: #fafafa;
+}
+.panth-mm__row--root {
+    background: #fbfbfb;
+}
+.panth-mm__row--root > td {
+    border-bottom: 1px solid #ddd;
+}
+.panth-mm__row--root .panth-mm__title {
+    font-weight: 600;
+}
+.panth-mm__row--disabled > td {
+    background: #fafafa;
+    color: #b0b0b0;
+}
+.panth-mm__row--disabled .panth-mm__title {
+    text-decoration: line-through;
+    color: #b0b0b0;
+}
+
+/* indent + chevron */
+.panth-mm__indent {
+    display: inline-block;
+    width: calc(var(--d, 0) * 22px);
+}
+.panth-mm__chev {
+    display: inline-block;
+    margin-right: 6px;
+    color: #888;
+    font-size: 11px;
+}
+.panth-mm__title {
+    font-size: 13px;
+    color: #303030;
+}
+.panth-mm__title--override {
+    border-left: 3px solid #1F2E44;
+    padding-left: 6px;
+    margin-left: -6px;
+}
+.panth-mm__col-id code {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    color: #555;
+    background: transparent;
+    padding: 0;
+    word-break: normal;
+    overflow-wrap: anywhere;
+}
+
+/* inputs */
+.panth-mm__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 30px;
+    padding: 0 8px;
+    background: #fff;
+    border: 1px solid #adadad;
+    border-radius: 0;
+    color: #303030;
+    font-size: 13px;
+    font-family: inherit;
+}
+.panth-mm__input:focus {
+    outline: none;
+    border-color: #1F2E44;
+}
+.panth-mm__input--num {
+    text-align: right;
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+}
+
+/* enabled toggle */
+.panth-mm__switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 18px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+.panth-mm__switch input[type="checkbox"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+.panth-mm__switch-track {
+    position: absolute;
+    inset: 0;
+    background: #c2c2c2;
+    border-radius: 9px;
+    transition: background 0.12s ease;
+}
+.panth-mm__switch-track::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    transition: transform 0.12s ease;
+}
+.panth-mm__switch input[type="checkbox"]:checked ~ .panth-mm__switch-track {
+    background: #79a22e;
+}
+.panth-mm__switch input[type="checkbox"]:checked ~ .panth-mm__switch-track::before {
+    transform: translateX(18px);
+}
+.panth-mm__lock {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    color: #666;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* reset link */
+.panth-mm__reset {
+    background: transparent;
+    border: 0;
+    padding: 4px 8px;
+    color: #1F2E44;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.panth-mm__reset:hover {
+    color: #162233;
+}
+
+/* sticky save bar */
+.panth-mm__form {
+    scroll-padding-bottom: 64px;
+}
+.panth-mm__sticky-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: #f5f5f5;
+    border-top: 1px solid #ccc;
+}
+.panth-mm__sticky-actions .action-primary {
+    height: 34px;
+    padding: 0 22px;
+    /* Magento adminhtml .action-primary - orange #eb5202 / hover #ba4000 */
+    background: #eb5202;
+    border: 1px solid #eb5202;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.1s ease, border-color 0.1s ease;
+}
+.panth-mm__sticky-actions .action-primary:hover,
+.panth-mm__sticky-actions .action-primary:focus {
+    background: #ba4000;
+    border-color: #ba4000;
+}
+.panth-mm__hint {
+    color: #666;
+    font-size: 12px;
+}
+
+/* search filter */
+.panth-mm__row--filtered-out {
+    display: none;
+}
+
+/* tree expand / collapse - clean SVG chevron, consistent 20×20 hit area
+ * across both parents and leaves so titles line up perfectly column-wise. */
+.panth-mm__chev-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin: 0 4px 0 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    color: #767676;
+    cursor: pointer;
+    vertical-align: middle;
+    line-height: 1;
+    transition: background 0.1s ease, color 0.1s ease;
+}
+.panth-mm__chev-btn:hover {
+    background: #ebebeb;
+    color: #1F2E44;
+}
+.panth-mm__chev-btn:focus {
+    outline: 1px solid #1F2E44;
+    outline-offset: 1px;
+}
+.panth-mm__chev-btn--leaf {
+    cursor: default;
+    pointer-events: none;
+    background: transparent !important;
+}
+.panth-mm__chev {
+    display: block;
+    transform: rotate(90deg);
+    transform-origin: 50% 50%;
+    transition: transform 0.18s ease;
+}
+.panth-mm__row--collapsed .panth-mm__chev {
+    transform: rotate(0deg);
+}
+.panth-mm__row--collapsed .panth-mm__chev-btn {
+    color: #1F2E44;
+}
+.panth-mm__row--hidden-by-collapse {
+    display: none;
+}
+/* When the user types in the quick search, ignore collapse - matches surface. */
+.panth-mm__row--searching.panth-mm__row--hidden-by-collapse {
+    display: table-row;
+}
+.panth-mm__row.panth-mm__row--searching.panth-mm__row--filtered-out {
+    display: none;
+}
+
+.panth-mm__id-inline {
+    display: none;
+}
+@media (max-width: 1279px) {
+    .panth-mm__table th.panth-mm__col-id,
+    .panth-mm__table td.panth-mm__col-id {
+        display: none;
+    }
+    .panth-mm__table .panth-mm__col-name,
+    .panth-mm__table .panth-mm__col-label,
+    .panth-mm__table .panth-mm__col-parent {
+        width: auto;
+        min-width: 0;
+    }
+    .panth-mm__table .panth-mm__col-icon {
+        width: 130px;
+        min-width: 130px;
+    }
+    .panth-mm__table .panth-mm__col-sort {
+        width: 72px;
+        min-width: 72px;
+    }
+    .panth-mm__table .panth-mm__col-actions {
+        width: 64px;
+        min-width: 64px;
+    }
+    .panth-mm__id-inline {
+        display: block;
+        margin: 2px 0 0 calc(var(--d, 0) * 22px + 60px);
+        color: #666;
+        font-size: 12px;
+        line-height: 1.4;
+        word-break: break-word;
+        background: transparent;
+        padding: 0;
+    }
+}
+
+/* ----- Per-item colour swatch ---------------------------------- */
+.panth-mm__color-cell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 16px;
+    height: 16px;
+    margin: 0 8px 0 2px;
+    vertical-align: middle;
+}
+.panth-mm__color-swatch {
+    position: relative;
+    display: block;
+    width: 16px;
+    height: 16px;
+    background: var(--swatch, #f5f5f5);
+    border: 1px solid #adadad;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: border-color 0.1s ease;
+}
+.panth-mm__color-cell:not(.panth-mm__color-cell--set) .panth-mm__color-swatch {
+    /* Diagonal-stripe pattern signals "no colour set". */
+    background: #fff;
+}
+.panth-mm__color-cell--set .panth-mm__color-swatch { border-color: #303030; }
+.panth-mm__color-swatch:hover { border-color: #1F2E44; }
+.panth-mm__color-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.panth-mm__color-clear {
+    display: none;
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #888;
+    border-radius: 50%;
+    color: #555;
+    font-size: 12px;
+    line-height: 11px;
+    text-align: center;
+    cursor: pointer;
+}
+.panth-mm__color-cell--set .panth-mm__color-clear { display: block; }
+.panth-mm__color-clear:hover { background: #f0f0f0; color: #c0392b; border-color: #c0392b; }

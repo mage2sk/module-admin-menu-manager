@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Panth_AdminMenuManager::css/bootstrap-icons.css"/>
+        <css src="Panth_AdminMenuManager::css/drilldown.css"/>
+        <script src="Panth_AdminMenuManager::js/drilldown.js"/>
+    </head>
+    <body>
+        <referenceContainer name="head.additional">
+            <block class="Panth\AdminMenuManager\Block\Adminhtml\BootstrapIconsLink"
+                   name="panth.drilldown.bootstrap_icons_link"
+                   template="Panth_AdminMenuManager::bootstrap-icons-link.phtml"
+                   before="-"/>
+            <block class="Panth\AdminMenuManager\Block\Adminhtml\Config"
+                   name="panth.drilldown.config"
+                   template="Panth_AdminMenuManager::config.phtml"
+                   after="panth.drilldown.bootstrap_icons_link"/>
+            <block class="Panth\AdminMenuManager\Block\Adminhtml\CustomIconCss"
+                   name="panth.drilldown.custom_icon_css"
+                   template="Panth_AdminMenuManager::custom-icon-css.phtml"
+                   after="panth.drilldown.config"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="panth" translate="label" sortOrder="500">
+            <label>Panth</label>
+        </tab>
+        <!--
+          Section id stays `panth_drilldown` for backward compatibility
+          with the original module name (Panth_AdminMenuDrilldown):
+          every config_path in Block/Adminhtml/Config.php points at
+          `panth_drilldown/general/*`, and renaming the section would
+          orphan saved values in core_config_data. Only the user-facing
+          label changed when the module was renamed to Admin Menu Manager.
+        -->
+        <section id="panth_drilldown" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <class>separator-top</class>
+            <label>Admin Menu Manager</label>
+            <tab>panth</tab>
+            <resource>Panth_AdminMenuManager::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General</label>
+                <field id="manager_link" translate="label comment" type="label" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Menu manager</label>
+                    <frontend_model>Panth\AdminMenuManager\Block\Adminhtml\System\Config\ManagerLink</frontend_model>
+                </field>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable drill-down</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Master switch. When off, every admin menu uses Magento's default hover behaviour.</comment>
+                </field>
+                <field id="targets" translate="label comment" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Apply to top-level menus</label>
+                    <source_model>Panth\AdminMenuManager\Model\Config\Source\MenuItems</source_model>
+                    <backend_model>Panth\AdminMenuManager\Model\Config\Backend\Targets</backend_model>
+                    <comment><![CDATA[Pick the top-level (L0) admin menu items that should use click-to-open drill-down. Unselected menus keep Magento's default hover behaviour.<br/><strong>Note:</strong> all <code>Panth_*</code> menus are always included regardless of this selection.]]></comment>
+                    <can_be_empty>1</can_be_empty>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="new_tab_targets" translate="label comment" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Open in a new tab - Menu IDs</label>
+                    <comment><![CDATA[One menu item ID per line. Any link in the drill-down panel whose ID matches will open in a new browser tab and gets a small external-link icon next to its label. Useful for items the merchant typically opens alongside the page they're already on.<br/>Examples:<br/><code>Panth_AdminMenuManager::menu_manager<br/>Panth_AdminMenuManager::configuration</code>]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Panth Admin Menu Manager - backend menu entries.
+ *
+ * Two-level layout that matches the convention used by every other
+ * Panth_* module (Panth_Faq, Panth_BannerSlider, Panth_XmlSitemap, ...):
+ *
+ *   Panth Infotech                       (Panth_Core::panth_extensions)
+ *     └── Admin Menu Manager             (group node - no action, just a header)
+ *           ├── Manager                  (the customise-menu UI)
+ *           └── Configuration            (jumps to system_config section)
+ *
+ * The group node carries the module's display name; the children are
+ * specific actions. A merchant browsing the Panth Infotech drilldown
+ * panel sees one entry per module rather than two flat siblings of
+ * "Core Settings".
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Panth_AdminMenuManager::group"
+             title="Admin Menu Manager"
+             module="Panth_AdminMenuManager"
+             sortOrder="80"
+             parent="Panth_Core::panth_extensions"
+             resource="Panth_AdminMenuManager::manage_overrides"/>
+
+        <add id="Panth_AdminMenuManager::menu_manager"
+             title="Manager"
+             module="Panth_AdminMenuManager"
+             sortOrder="10"
+             parent="Panth_AdminMenuManager::group"
+             resource="Panth_AdminMenuManager::manage_overrides"
+             action="panth_menu_manager/manager/index"/>
+
+        <add id="Panth_AdminMenuManager::configuration"
+             title="Configuration"
+             module="Panth_AdminMenuManager"
+             sortOrder="20"
+             parent="Panth_AdminMenuManager::group"
+             resource="Panth_AdminMenuManager::config"
+             action="adminhtml/system_config/edit/section/panth_drilldown"/>
+    </menu>
+</config>

@@ -1,0 +1,50 @@
+<?php
+/** @var \Panth\AdminMenuManager\Block\Adminhtml\CustomIconCss $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$iconSelectors = $block->getIconSelectors();
+$colorRules    = $block->getColorRules();
+if (empty($iconSelectors) && empty($colorRules)) {
+    return;
+}
+?>
+<style id="panth-mm-custom-item-overrides">
+<?php foreach ($iconSelectors as $sel): ?>
+    /* Hide Magentos native :before icon when a custom one is set. */
+    nav.admin__menu li#<?= $escaper->escapeHtml($sel) ?> > a::before,
+    nav.admin__menu li[data-ui-id="<?= $escaper->escapeHtmlAttr($sel) ?>"] > a::before,
+    nav.admin__menu li[data-ui-id="<?= $escaper->escapeHtmlAttr($sel) ?>"] > strong::before {
+        content: none !important;
+        display: none !important;
+    }
+<?php endforeach; ?>
+<?php foreach ($colorRules as $r): ?>
+    /* Coloured left-stripe accent for the menu item.
+     * inset box-shadow is the layout-safe option (no shift), but some
+     * admin themes override box-shadow on :hover / :focus, so we ALSO
+     * paint a ::before bar pinned to the left edge of the LI as a
+     * fallback that's much harder to clobber. */
+    nav.admin__menu li#<?= $escaper->escapeHtml($r['jsid']) ?> > a,
+    nav.admin__menu li[data-ui-id="<?= $escaper->escapeHtmlAttr($r['jsid']) ?>"] > a,
+    nav.admin__menu li[data-ui-id="<?= $escaper->escapeHtmlAttr($r['jsid']) ?>"] > strong,
+    nav.admin__menu li#<?= $escaper->escapeHtml($r['jsid']) ?> > a:focus,
+    nav.admin__menu li#<?= $escaper->escapeHtml($r['jsid']) ?> > a:hover {
+        box-shadow: inset 4px 0 0 <?= $escaper->escapeHtml($r['color']) ?> !important;
+    }
+    nav.admin__menu li#<?= $escaper->escapeHtml($r['jsid']) ?>,
+    nav.admin__menu li[data-ui-id="<?= $escaper->escapeHtmlAttr($r['jsid']) ?>"] {
+        position: relative !important;
+    }
+    nav.admin__menu li#<?= $escaper->escapeHtml($r['jsid']) ?>::before,
+    nav.admin__menu li[data-ui-id="<?= $escaper->escapeHtmlAttr($r['jsid']) ?>"]::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 4px !important;
+        background: <?= $escaper->escapeHtml($r['color']) ?> !important;
+        z-index: 5 !important;
+        pointer-events: none !important;
+    }
+<?php endforeach; ?>
+</style>
